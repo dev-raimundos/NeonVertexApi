@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using NeonVertexApi.App.Core.Database;
 using NeonVertexApi.App.Core.Extensions;
+using NeonVertexApi.App.Modules.Authentication;
 using NeonVertexApi.App.Modules.Users;
 using Scalar.AspNetCore;
 
@@ -13,9 +14,11 @@ public static class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddCore(builder.Configuration);
-        builder.Services.AddUsersModule();
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
+
+        builder.Services.AddUsersModule();
+        builder.Services.AddAuthModule();
 
         var app = builder.Build();
 
@@ -34,7 +37,6 @@ public static class Program
         }
 
         app.UseHttpsRedirection();
-        app.UseAuthorization();
         app.MapControllers();
 
         await app.RunAsync();
