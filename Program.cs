@@ -25,6 +25,8 @@ public static class Program
             await db.Database.MigrateAsync();
         }
 
+        app.UseCore();
+
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();

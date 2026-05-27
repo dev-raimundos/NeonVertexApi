@@ -31,12 +31,10 @@
 
 	<ItemGroup>
 		<Folder Include="App\Core\Database\Migrations\" />
-		<Folder Include="App\Core\Middleware\" />
 		<Folder Include="App\Core\Authentication\" />
 		<Folder Include="App\Core\Settings\" />
 		<Folder Include="App\Modules\Authentication\" />
 		<Folder Include="App\Shared\Interface\" />
-		<Folder Include="App\Shared\Exceptions\" />
 		<Folder Include="App\Shared\Extensions\" />
 		<Folder Include="App\Shared\Validators\" />
 	</ItemGroup>
