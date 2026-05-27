@@ -46,34 +46,34 @@ tasks:
   # ── produção ─────────────────────────────────────────────────
 
   prod:build:
-    desc: "Rebuilda a imagem de produção sem cache"
-    cmds:
-      - docker compose -f compose.prod.yaml build --no-cache
+      desc: "Rebuilda a imagem de produção sem cache"
+      cmds:
+        - docker compose -f compose.yaml build --no-cache
 
   prod:up:
     desc: "Sobe a aplicação em produção em background"
     cmds:
-      - docker compose -f compose.prod.yaml up -d
+      - docker compose -f compose.yaml up -d
 
   prod:restart:
     desc: "Reinicia o container de produção"
     cmds:
-      - docker compose -f compose.prod.yaml restart app
+      - docker compose -f compose.yaml restart app
 
   prod:down:
     desc: "Derruba os containers de produção"
     cmds:
-      - docker compose -f compose.prod.yaml down
+      - docker compose -f compose.yaml down
 
   prod:logs:
     desc: "Exibe logs de produção em tempo real"
     cmds:
-      - docker compose -f compose.prod.yaml logs -f app
+      - docker compose -f compose.yaml logs -f app
 
   prod:shell:
     desc: "Abre shell no container de produção"
     cmds:
-      - docker compose -f compose.prod.yaml exec app /bin/bash
+      - docker compose -f compose.yaml exec app /bin/bash
 
   prod:deploy:
     desc: "Rebuilda e sobe produção em um comando"

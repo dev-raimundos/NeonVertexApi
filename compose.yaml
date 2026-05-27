@@ -2,12 +2,15 @@ services:
   app:
     build:
       context: .
-      target: development
+      target: production
     env_file:
       - .env
     environment:
       - ConnectionStrings__Default=${POSTGRES_CONNECTION}
-    ports:
-      - "5000:5000"
-    volumes:
-      - .:/app
+    restart: always
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
