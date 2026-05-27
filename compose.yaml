@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: .
+      target: development
+    env_file:
+      - .env
+    environment:
+      - ConnectionStrings__Default=${POSTGRES_CONNECTION}
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app

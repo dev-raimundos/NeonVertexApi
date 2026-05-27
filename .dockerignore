@@ -1,0 +1,21 @@
+# git
+.git
+.gitignore
+
+# build local
+bin/
+obj/
+
+# configs locais e segredos
+.env
+appsettings.Development.json
+secrets.json
+
+# ide
+.idea/
+.vscode/
+.vs/
+
+# docker
+Dockerfile
+compose.yaml

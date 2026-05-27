@@ -1,0 +1,133 @@
+version: '3'
+
+tasks:
+  # ── desenvolvimento ──────────────────────────────────────────
+
+  dev:
+    desc: "Sobe a aplicação em modo desenvolvimento"
+    cmds:
+      - docker compose up
+
+  dev:detached:
+    desc: "Sobe a aplicação em background"
+    cmds:
+      - docker compose up -d
+
+  build:
+    desc: "Rebuilda a imagem de desenvolvimento sem cache"
+    cmds:
+      - docker compose build --no-cache
+
+  restart:
+    desc: "Reinicia o container da aplicação"
+    cmds:
+      - docker compose restart app
+
+  down:
+    desc: "Derruba os containers"
+    cmds:
+      - docker compose down
+
+  down:volumes:
+    desc: "Derruba containers e remove volumes"
+    cmds:
+      - docker compose down -v
+
+  shell:
+    desc: "Abre shell no container da aplicação"
+    cmds:
+      - docker compose exec app /bin/bash
+
+  logs:
+    desc: "Exibe logs da aplicação em tempo real"
+    cmds:
+      - docker compose logs -f app
+
+  # ── produção ─────────────────────────────────────────────────
+
+  prod:build:
+    desc: "Rebuilda a imagem de produção sem cache"
+    cmds:
+      - docker compose -f compose.prod.yaml build --no-cache
+
+  prod:up:
+    desc: "Sobe a aplicação em produção em background"
+    cmds:
+      - docker compose -f compose.prod.yaml up -d
+
+  prod:restart:
+    desc: "Reinicia o container de produção"
+    cmds:
+      - docker compose -f compose.prod.yaml restart app
+
+  prod:down:
+    desc: "Derruba os containers de produção"
+    cmds:
+      - docker compose -f compose.prod.yaml down
+
+  prod:logs:
+    desc: "Exibe logs de produção em tempo real"
+    cmds:
+      - docker compose -f compose.prod.yaml logs -f app
+
+  prod:shell:
+    desc: "Abre shell no container de produção"
+    cmds:
+      - docker compose -f compose.prod.yaml exec app /bin/bash
+
+  prod:deploy:
+    desc: "Rebuilda e sobe produção em um comando"
+    cmds:
+      - task: prod:build
+      - task: prod:up
+
+  # ── migrations ───────────────────────────────────────────────
+
+  migration:add:
+    desc: "Cria uma nova migration. Uso: task migration:add NAME=NomeDaMigration"
+    cmds:
+      - docker compose exec app dotnet ef migrations add {{.NAME}}
+
+  migration:run:
+    desc: "Aplica migrations pendentes no banco"
+    cmds:
+      - docker compose exec app dotnet ef database update
+
+  migration:revert:
+    desc: "Reverte a última migration"
+    cmds:
+      - docker compose exec app dotnet ef migrations remove
+
+  migration:list:
+    desc: "Lista todas as migrations e seus status"
+    cmds:
+      - docker compose exec app dotnet ef migrations list
+
+  # ── qualidade ────────────────────────────────────────────────
+
+  test:
+    desc: "Roda todos os testes"
+    cmds:
+      - docker compose exec app dotnet test
+
+  test:watch:
+    desc: "Roda os testes em modo watch"
+    cmds:
+      - docker compose exec app dotnet test --watch
+
+  format:
+    desc: "Formata o código"
+    cmds:
+      - docker compose exec app dotnet format
+
+  # ── utilitários ──────────────────────────────────────────────
+
+  restore:
+    desc: "Restaura os pacotes NuGet"
+    cmds:
+      - docker compose exec app dotnet restore
+
+  clean:
+    desc: "Remove bin/ e obj/"
+    cmds:
+      - docker compose exec app dotnet clean
