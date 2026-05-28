@@ -1,11 +1,13 @@
-﻿using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NeonVertexApi.App.Core.Authentication;
 using NeonVertexApi.App.Core.Database;
 using NeonVertexApi.App.Core.Settings;
 using NeonVertexApi.App.Shared.Interfaces;
+using System.Text;
 
 namespace NeonVertexApi.App.Core.Extensions;
 
@@ -13,16 +15,39 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddCore(this IServiceCollection services, IConfiguration configuration)
     {
+        // ── Database ──────────────────────────────────────────────────────────
+        // Registers AppDbContext with the PostgreSQL provider via Npgsql.
+        // UseSnakeCaseNamingConvention automatically converts table and column
+        // names to snake_case, following PostgreSQL naming conventions.
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(configuration.GetConnectionString("Default"))
                    .UseSnakeCaseNamingConvention());
 
+        // ── JWT Settings ──────────────────────────────────────────────────────
+        // Reads JWT configuration from appsettings / User Secrets / environment
+        // variables and makes it available via IOptions<JwtSettings> in the DI
+        // container.
         var jwtSettings = configuration.GetSection("Jwt").Get<JwtSettings>()!;
         services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
+
+        // ── Authentication ────────────────────────────────────────────────────
+        // Registers TokenService, responsible for generating JWT tokens.
+        // Registers IHttpContextAccessor so services outside the HTTP pipeline
+        // can access the HttpContext (used by CurrentUserService).
+        // Registers CurrentUserService, which extracts the authenticated user's
+        // data from the claims present in the request cookie.
         services.AddScoped<TokenService>();
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUserService>();
 
+        // Configures JWT Bearer as the default authentication scheme and sets
+        // the token validation parameters:
+        // - ValidateIssuer/Audience: ensures the token was issued by this API
+        // - ValidateLifetime: rejects expired tokens
+        // - ValidateIssuerSigningKey: verifies the signature using the configured secret
+        // OnMessageReceived: overrides the default Authorization header lookup
+        // to read the token from the "access_token" HTTP-only cookie, protecting
+        // against XSS attacks since the cookie is not accessible via JavaScript.
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -48,7 +73,23 @@ public static class ServiceCollectionExtensions
                 };
             });
 
-        services.AddAuthorization();
+        // ── Controllers ───────────────────────────────────────────────────────
+        // Registers controllers and sets application/json as the default
+        // content-type for all responses globally, removing the need to
+        // decorate each controller with [Produces("application/json")].
+        services.AddControllers(options =>
+        {
+            options.Filters.Add(new ProducesAttribute("application/json"));
+        });
+
+        // ── Authorization ─────────────────────────────────────────────────────
+        // Enables the ASP.NET authorization system and sets a global fallback policy
+        // that requires authentication for all endpoints by default.
+        // Use [AllowAnonymous] on specific endpoints to override this behavior.
+        services.AddAuthorizationBuilder()
+            .SetFallbackPolicy(new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .Build());
 
         return services;
     }
