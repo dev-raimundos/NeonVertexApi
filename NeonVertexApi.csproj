@@ -47,6 +47,10 @@
 		<Folder Include="App\Core\Database\Migrations\" />
 		<Folder Include="App\Modules\Authentication\Models\" />
 		<Folder Include="App\Modules\Authentication\Repositories\" />
+		<Folder Include="App\Modules\TodoList\Controllers\" />
+		<Folder Include="App\Modules\TodoList\DTOs\" />
+		<Folder Include="App\Modules\TodoList\Repositories\" />
+		<Folder Include="App\Modules\TodoList\Services\" />
 	</ItemGroup>
 
 </Project>
