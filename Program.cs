@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using NeonVertexApi.App.Core.Database;
 using NeonVertexApi.App.Core.Extensions;
 using NeonVertexApi.App.Modules.Authentication;
+using NeonVertexApi.App.Modules.Shopping;
 using NeonVertexApi.App.Modules.Users;
 using Scalar.AspNetCore;
 
@@ -19,6 +20,7 @@ public static class Program
 
         builder.Services.AddUsersModule();
         builder.Services.AddAuthModule();
+        builder.Services.AddShoppingModule();
 
         var app = builder.Build();
 
