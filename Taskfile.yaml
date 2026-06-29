@@ -1,8 +1,5 @@
 version: '3'
 
-vars:
-  PROD: "-f compose.yaml -f compose.prod.yaml"
-
 tasks:
   default:
     desc: "Lista todas as tasks disponíveis"
@@ -14,32 +11,32 @@ tasks:
   prod:build:
     desc: "Builda a imagem de produção"
     cmds:
-      - docker compose {{.PROD}} build
+      - docker compose build
 
   prod:rebuild:
     desc: "Builda a imagem de produção sem cache"
     cmds:
-      - docker compose {{.PROD}} build --no-cache
+      - docker compose build --no-cache
 
   prod:start:
     desc: "Sobe a stack de produção em background"
     cmds:
-      - docker compose {{.PROD}} up -d
+      - docker compose up -d
 
   prod:stop:
     desc: "Para os containers de produção sem removê-los"
     cmds:
-      - docker compose {{.PROD}} stop
+      - docker compose stop
 
   prod:restart:
     desc: "Reinicia o container da API em produção"
     cmds:
-      - docker compose {{.PROD}} restart api
+      - docker compose restart api
 
   prod:down:
     desc: "Derruba a stack de produção"
     cmds:
-      - docker compose {{.PROD}} down
+      - docker compose down
 
   prod:deploy:
     desc: "Builda e sobe a produção em um comando"
@@ -50,9 +47,9 @@ tasks:
   prod:logs:
     desc: "Logs da API em tempo real (produção)"
     cmds:
-      - docker compose {{.PROD}} logs -f api
+      - docker compose logs -f api
 
   prod:ps:
     desc: "Status dos containers de produção"
     cmds:
-      - docker compose {{.PROD}} ps
+      - docker compose ps
