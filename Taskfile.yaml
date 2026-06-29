@@ -43,6 +43,13 @@ tasks:
       - task: build
       - task: start
 
+  pull:
+    desc: "Faz git pull e reconstrói o container com as alterações"
+    cmds:
+      - git pull
+      - task: rebuild
+      - task: start
+
   logs:
     desc: "Logs da API em tempo real"
     cmds:
