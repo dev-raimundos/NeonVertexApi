@@ -36,7 +36,6 @@ public static class Program
         app.MapGet("/", () => Results.Redirect("/scalar/v1"));
         app.MapGet("/scalar", () => Results.Redirect("/scalar/v1"));
 
-        app.UseHttpsRedirection();
         app.MapControllers();
 
         await app.RunAsync();
