@@ -66,6 +66,6 @@ tasks:
       - docker compose exec api /bin/sh
 
   migrate:
-    desc: "Aplica as migrations pendentes no banco"
+    desc: "Cria uma nova migration (uso local). Ex: task migrate -- NomeDaMigration"
     cmds:
-      - dotnet ef database update
+      - dotnet ef migrations add {{.CLI_ARGS}}
