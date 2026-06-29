@@ -5,7 +5,7 @@ public static class StatusPage
     public static string Render(IWebHostEnvironment env)
     {
         var scalarLink = env.IsDevelopment()
-            ? """<p><a href="/scalar/v1">→ API Reference</a></p>"""
+            ? """<a class="docs-link" href="/scalar/v1">API Reference →</a>"""
             : "";
 
         return $$"""
@@ -16,21 +16,128 @@ public static class StatusPage
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>NeonVertex API</title>
                 <style>
-                    body { font-family: system-ui, sans-serif; max-width: 480px; margin: 80px auto; padding: 0 20px; color: #111; }
-                    h1 { font-size: 1.4rem; margin-bottom: .5rem; }
-                    .badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: .75rem; font-weight: 600; }
-                    .ok { background: #d1fae5; color: #065f46; }
-                    .ev { background: #e0e7ff; color: #3730a3; }
-                    p { margin-top: 1.5rem; font-size: .875rem; color: #6b7280; }
-                    a { color: #4f46e5; }
+                    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+                    body {
+                        font-family: system-ui, -apple-system, sans-serif;
+                        background: #060a12;
+                        color: #e2e8f0;
+                        min-height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    .card {
+                        background: rgba(15, 22, 36, 0.9);
+                        border: 1px solid #1e2d45;
+                        border-radius: 16px;
+                        padding: 48px 52px;
+                        width: 380px;
+                        text-align: center;
+                        box-shadow: 0 0 60px rgba(34, 211, 238, 0.05), 0 24px 48px rgba(0, 0, 0, 0.4);
+                    }
+
+                    .logo {
+                        font-size: 1.6rem;
+                        font-weight: 700;
+                        letter-spacing: -0.3px;
+                        margin-bottom: 4px;
+                    }
+
+                    .logo .accent { color: #22d3ee; }
+
+                    .tagline {
+                        font-size: 0.7rem;
+                        color: #475569;
+                        letter-spacing: 0.15em;
+                        text-transform: uppercase;
+                        margin-bottom: 36px;
+                    }
+
+                    .divider {
+                        border: none;
+                        border-top: 1px solid #1e2d45;
+                        margin-bottom: 28px;
+                    }
+
+                    .status-row {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        margin-bottom: 14px;
+                    }
+
+                    .label {
+                        font-size: 0.75rem;
+                        color: #475569;
+                        text-transform: uppercase;
+                        letter-spacing: 0.08em;
+                    }
+
+                    .value {
+                        font-size: 0.8rem;
+                        font-weight: 500;
+                        color: #94a3b8;
+                    }
+
+                    .status-indicator {
+                        display: flex;
+                        align-items: center;
+                        gap: 7px;
+                    }
+
+                    .dot {
+                        width: 7px;
+                        height: 7px;
+                        border-radius: 50%;
+                        background: #22d3ee;
+                        box-shadow: 0 0 8px #22d3ee;
+                        animation: glow 2s ease-in-out infinite;
+                    }
+
+                    @keyframes glow {
+                        0%, 100% { box-shadow: 0 0 6px #22d3ee; }
+                        50%       { box-shadow: 0 0 14px #22d3ee, 0 0 24px rgba(34, 211, 238, 0.3); }
+                    }
+
+                    .status-text {
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                        color: #22d3ee;
+                    }
+
+                    .docs-link {
+                        display: inline-block;
+                        margin-top: 28px;
+                        font-size: 0.75rem;
+                        color: #22d3ee;
+                        text-decoration: none;
+                        opacity: 0.7;
+                        transition: opacity 0.15s;
+                    }
+
+                    .docs-link:hover { opacity: 1; }
                 </style>
             </head>
             <body>
-                <h1>NeonVertex API</h1>
-                <span class="badge ok">● online</span>
-                &nbsp;
-                <span class="badge ev">{{env.EnvironmentName}}</span>
-                {{scalarLink}}
+                <div class="card">
+                    <div class="logo">Neon<span class="accent">Vertex</span> API</div>
+                    <div class="tagline">REST Interface</div>
+                    <hr class="divider">
+                    <div class="status-row">
+                        <span class="label">Status</span>
+                        <div class="status-indicator">
+                            <div class="dot"></div>
+                            <span class="status-text">online</span>
+                        </div>
+                    </div>
+                    <div class="status-row">
+                        <span class="label">Environment</span>
+                        <span class="value">{{env.EnvironmentName}}</span>
+                    </div>
+                    {{scalarLink}}
+                </div>
             </body>
             </html>
             """;

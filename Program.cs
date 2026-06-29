@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using NeonVertexApi.App.Core.Database;
 using NeonVertexApi.App.Core.Extensions;
@@ -19,15 +18,6 @@ public static class Program
         builder.Services.AddCore(builder.Configuration);
         builder.Services.AddOpenApi();
 
-        if (builder.Environment.IsProduction())
-        {
-            builder.Services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
-                options.KnownProxies.Clear();
-            });
-        }
-
         builder.Services.AddUsersModule();
         builder.Services.AddAuthModule();
         builder.Services.AddShoppingModule();
@@ -38,12 +28,6 @@ public static class Program
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await db.Database.MigrateAsync();
-        }
-
-        if (app.Environment.IsProduction())
-        {
-            app.UseForwardedHeaders();
-            app.UseHttpsRedirection();
         }
 
         app.UseCore();
