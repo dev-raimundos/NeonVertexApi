@@ -17,15 +17,19 @@
 	  <Compile Remove="App\Shared\Extensions\**" />
 	  <Compile Remove="App\Shared\Interface\**" />
 	  <Compile Remove="App\Shared\Validators\**" />
+	  <Compile Remove="tests\**" />
 	  <Content Remove="App\Shared\Extensions\**" />
 	  <Content Remove="App\Shared\Interface\**" />
 	  <Content Remove="App\Shared\Validators\**" />
+	  <Content Remove="tests\**" />
 	  <EmbeddedResource Remove="App\Shared\Extensions\**" />
 	  <EmbeddedResource Remove="App\Shared\Interface\**" />
 	  <EmbeddedResource Remove="App\Shared\Validators\**" />
+	  <EmbeddedResource Remove="tests\**" />
 	  <None Remove="App\Shared\Extensions\**" />
 	  <None Remove="App\Shared\Interface\**" />
 	  <None Remove="App\Shared\Validators\**" />
+	  <None Remove="tests\**" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -22,6 +22,8 @@ services:
       - Jwt__Audience=${JWT__AUDIENCE:-coeur-api}
       - Jwt__ExpirationHours=${JWT__EXPIRATIONHOURS:-24}
       - AllowedHosts=${ALLOWED_HOSTS:?ALLOWED_HOSTS is required}
+      - Cors__AllowedOrigins=${CORS_ALLOWED_ORIGINS:-https://coeur.app.br}
+      - Database__AutoMigrate=${DATABASE_AUTO_MIGRATE:-true}
     restart: unless-stopped
     logging:
       driver: json-file

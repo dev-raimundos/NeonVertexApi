@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
         // ── Database ──────────────────────────────────────────────────────────
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("Default")));
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<AppDbContext>());
 
         // ── Forwarded Headers ────────────────────────────────────────────────
         // Confia no cabeçalho de proto/IP repassado pelo Cloudflare Tunnel (cloudflared),
@@ -45,14 +46,14 @@ public static class ServiceCollectionExtensions
         services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
 
         // ── CORS ──────────────────────────────────────────────────────────────
+        var allowedOrigins = (configuration["Cors:AllowedOrigins"] ?? string.Empty)
+            .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
         services.AddCors(options =>
         {
             options.AddPolicy("Frontend", policy =>
             {
-                policy.WithOrigins(
-                          "http://localhost:4200",
-                          "https://web-client-gold.vercel.app"
-                      )
+                policy.WithOrigins(allowedOrigins)
                       .AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials();

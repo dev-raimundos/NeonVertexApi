@@ -4,8 +4,8 @@ namespace CoeurApi.App.Modules.Shopping.Repositories;
 
 public interface IProductRepository
 {
-    Task<List<Product>> GetAllAsync(string? category);
-    Task<Product?> GetByIdAsync(Guid id);
-    Task AddAsync(Product product);
+    Task<(List<Product> Items, int TotalCount)> GetAllAsync(string? category, int page, int pageSize, CancellationToken cancellationToken = default);
+    Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task AddAsync(Product product, CancellationToken cancellationToken = default);
     void Delete(Product product);
 }

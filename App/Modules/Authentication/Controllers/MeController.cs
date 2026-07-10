@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using CoeurApi.App.Modules.Authentication.DTOs;
 using CoeurApi.App.Shared.Interfaces;
 
 namespace CoeurApi.App.Modules.Authentication.Controllers;
@@ -8,14 +9,8 @@ namespace CoeurApi.App.Modules.Authentication.Controllers;
 public class MeController(ICurrentUser user) : ControllerBase
 {
     [HttpGet("me")]
-    public IActionResult Me()
+    public ActionResult<MeResponse> Me()
     {
-        return Ok(new
-        {
-            user.Id,
-            user.Name,
-            user.Email,
-        });
-
+        return Ok(new MeResponse(user.Id, user.Name, user.Email));
     }
 }

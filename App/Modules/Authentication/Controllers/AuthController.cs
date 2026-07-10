@@ -15,13 +15,16 @@ public class AuthController(AuthService service, IOptions<JwtSettings> jwtSettin
     [HttpPost("login")]
     [AllowAnonymous]
     [EnableRateLimiting("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginDto dto, CancellationToken cancellationToken)
     {
-        var result = await service.LoginAsync(dto);
+        var result = await service.LoginAsync(dto, cancellationToken);
 
         var response = result.Response;
         var token = result.Token;
 
+        // Strict funciona pois front (coeur.app.br) e API (api.coeur.app.br) são same-site
+        // (mesmo domínio registrável) — se o front algum dia sair desse domínio, isso quebra
+        // e precisa virar SameSite.None (com Secure=true obrigatório).
         Response.Cookies.Append("access_token", token, new CookieOptions
         {
             HttpOnly = true,
@@ -35,7 +38,7 @@ public class AuthController(AuthService service, IOptions<JwtSettings> jwtSettin
 
     [HttpPost("logout")]
     [AllowAnonymous]
-    public IActionResult Logout()
+    public ActionResult Logout()
     {
         Response.Cookies.Delete("access_token");
         return NoContent();

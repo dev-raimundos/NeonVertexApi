@@ -24,8 +24,11 @@ public static class Program
 
         var app = builder.Build();
 
-        using (var scope = app.Services.CreateScope())
+        // Desligável via config (Database:AutoMigrate=false) pra ambientes com múltiplas
+        // réplicas, onde migration deve rodar como step separado do deploy, não no startup.
+        if (app.Configuration.GetValue("Database:AutoMigrate", true))
         {
+            using var scope = app.Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await db.Database.MigrateAsync();
         }
