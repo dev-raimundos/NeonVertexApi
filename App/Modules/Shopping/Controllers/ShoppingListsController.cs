@@ -20,6 +20,8 @@ public class ShoppingListsController(
     ICurrentUser currentUser) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType<PagedResult<ShoppingListResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<PagedResult<ShoppingListResponse>>> GetAll(
         [FromQuery] int? page,
         [FromQuery] int? pageSize,
@@ -31,6 +33,10 @@ public class ShoppingListsController(
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType<ShoppingListResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ShoppingListResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var list = await getShoppingListById.ExecuteAsync(id, currentUser.Id, cancellationToken);
@@ -38,6 +44,9 @@ public class ShoppingListsController(
     }
 
     [HttpPost]
+    [ProducesResponseType<ShoppingListResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<ShoppingListResponse>> Create([FromBody] CreateShoppingListDto dto, CancellationToken cancellationToken)
     {
         var list = await createShoppingList.ExecuteAsync(dto, currentUser.Id, cancellationToken);
@@ -45,6 +54,11 @@ public class ShoppingListsController(
     }
 
     [HttpPut("{id:guid}")]
+    [ProducesResponseType<ShoppingListResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ShoppingListResponse>> Update(Guid id, [FromBody] UpdateShoppingListDto dto, CancellationToken cancellationToken)
     {
         var list = await updateShoppingList.ExecuteAsync(id, dto, currentUser.Id, cancellationToken);
@@ -52,6 +66,10 @@ public class ShoppingListsController(
     }
 
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await deleteShoppingList.ExecuteAsync(id, currentUser.Id, cancellationToken);
@@ -59,6 +77,11 @@ public class ShoppingListsController(
     }
 
     [HttpPost("{id:guid}/items")]
+    [ProducesResponseType<ListItemResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ListItemResponse>> AddItem(Guid id, [FromBody] AddListItemDto dto, CancellationToken cancellationToken)
     {
         var item = await addShoppingListItem.ExecuteAsync(id, dto, currentUser.Id, cancellationToken);
@@ -66,6 +89,11 @@ public class ShoppingListsController(
     }
 
     [HttpPatch("{id:guid}/items/{itemId:guid}")]
+    [ProducesResponseType<ListItemResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ListItemResponse>> UpdateItem(Guid id, Guid itemId, [FromBody] UpdateListItemDto dto, CancellationToken cancellationToken)
     {
         var item = await updateShoppingListItem.ExecuteAsync(id, itemId, dto, currentUser.Id, cancellationToken);
@@ -73,6 +101,10 @@ public class ShoppingListsController(
     }
 
     [HttpDelete("{id:guid}/items/{itemId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> RemoveItem(Guid id, Guid itemId, CancellationToken cancellationToken)
     {
         await removeShoppingListItem.ExecuteAsync(id, itemId, currentUser.Id, cancellationToken);

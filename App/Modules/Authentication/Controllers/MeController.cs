@@ -9,6 +9,8 @@ namespace CoeurApi.App.Modules.Authentication.Controllers;
 public class MeController(ICurrentUser user) : ControllerBase
 {
     [HttpGet("me")]
+    [ProducesResponseType<MeResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     public ActionResult<MeResponse> Me()
     {
         return Ok(new MeResponse(user.Id, user.Name, user.Email));

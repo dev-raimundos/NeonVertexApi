@@ -16,6 +16,8 @@ public class ProductsController(
     DeleteProductService deleteProduct) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType<PagedResult<ProductResponse>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<PagedResult<ProductResponse>>> GetAll(
         [FromQuery] string? category,
         [FromQuery] int? page,
@@ -28,6 +30,9 @@ public class ProductsController(
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType<ProductResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProductResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var product = await getProductById.ExecuteAsync(id, cancellationToken);
@@ -36,6 +41,10 @@ public class ProductsController(
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
+    [ProducesResponseType<ProductResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<ProductResponse>> Create([FromBody] CreateProductDto dto, CancellationToken cancellationToken)
     {
         var product = await createProduct.ExecuteAsync(dto, cancellationToken);
@@ -44,6 +53,11 @@ public class ProductsController(
 
     [HttpPut("{id:guid}")]
     [Authorize(Roles = "Admin")]
+    [ProducesResponseType<ProductResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProductResponse>> Update(Guid id, [FromBody] UpdateProductDto dto, CancellationToken cancellationToken)
     {
         var product = await updateProduct.ExecuteAsync(id, dto, cancellationToken);
@@ -52,6 +66,10 @@ public class ProductsController(
 
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = "Admin")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await deleteProduct.ExecuteAsync(id, cancellationToken);

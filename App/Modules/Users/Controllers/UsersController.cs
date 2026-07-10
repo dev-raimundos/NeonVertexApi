@@ -15,6 +15,9 @@ public class UsersController(
 {
     [HttpPost]
     [AllowAnonymous]
+    [ProducesResponseType<UserResponse>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<UserResponse>> Create([FromBody] CreateUserDto dto, CancellationToken cancellationToken)
     {
         var user = await createUser.ExecuteAsync(dto, cancellationToken);
@@ -22,6 +25,10 @@ public class UsersController(
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var user = await getUserById.ExecuteAsync(id, cancellationToken);
@@ -29,6 +36,11 @@ public class UsersController(
     }
 
     [HttpPut("{id:guid}")]
+    [ProducesResponseType<UserResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UserResponse>> Update(Guid id, [FromBody] UpdateUserDto dto, CancellationToken cancellationToken)
     {
         var user = await updateUser.ExecuteAsync(id, dto, cancellationToken);
@@ -36,6 +48,10 @@ public class UsersController(
     }
 
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await deleteUser.ExecuteAsync(id, cancellationToken);

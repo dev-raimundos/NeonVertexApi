@@ -15,6 +15,11 @@ public class AuthController(LoginService loginService, IOptions<JwtSettings> jwt
     [HttpPost("login")]
     [AllowAnonymous]
     [EnableRateLimiting("login")]
+    [ProducesResponseType<AuthResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginDto dto, CancellationToken cancellationToken)
     {
         var result = await loginService.ExecuteAsync(dto, cancellationToken);
@@ -38,6 +43,7 @@ public class AuthController(LoginService loginService, IOptions<JwtSettings> jwt
 
     [HttpPost("logout")]
     [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public ActionResult Logout()
     {
         Response.Cookies.Delete("access_token");
