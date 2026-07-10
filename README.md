@@ -95,7 +95,10 @@ ModuleName/
 ├── Models/             # Entidade de domínio com propriedades private set e factory method Create
 │                       # Configuração do EF Core via IEntityTypeConfiguration<T>
 ├── Repositories/       # Acesso ao banco via AppDbContext, implementa interface de Shared
-├── Services/           # Regras de negócio, orquestra repository e outras dependências
+├── Services/           # Uma classe por caso de uso (ex: CreateUserService, GetUserByIdService),
+│                       # nunca um service com vários métodos agrupados. Cada uma expõe um único
+│                       # ExecuteAsync(...), orquestra repository e outras dependências (inclusive
+│                       # outros services, quando alguma lógica precisa ser reaproveitada)
 └── ModuleNameModule.cs # Extension method que registra tudo do módulo no container de DI
 ```
 

@@ -74,11 +74,15 @@ App/
         │                     # EF mapping via IEntityTypeConfiguration<T> in the same folder
         ├── Repositories/     # DB access through AppDbContext; implements an interface from Shared/
         ├── Validators/       # FluentValidation validators for DTOs
-        ├── Services/         # Business rules; throws AppException; orchestrates repo + other deps
+        ├── Services/         # One class per use case (e.g. CreateUserService, GetUserByIdService) —
+        │                     # no grouped multi-method services. Each exposes a single ExecuteAsync(...),
+        │                     # throws AppException, and orchestrates repo + other deps (including other
+        │                     # Services, e.g. GetOwnedShoppingListService injected wherever an ownership
+        │                     # check needs to be reused). Registered individually in <Module>Module.cs.
         └── <Module>Module.cs # `Add<Module>Module()` extension registering the module's DI bindings
 ```
 
-Request flow: `Controller → Service → Repository`, response bubbles back up through `Controller`. Adding a module means repeating this anatomy and wiring `Add<Module>Module()` into `Program.cs`.
+Request flow: `Controller → Service → Repository`, response bubbles back up through `Controller`. A controller injects one service per action (constructor gets `CreateUserService createUser, GetUserByIdService getUserById, ...`), never a single grouped service. Adding a module means repeating this anatomy and wiring `Add<Module>Module()` into `Program.cs`.
 
 Module registration and cross-cutting setup live in `App/Core/Extensions/`:
 - `ServiceCollectionExtensions.AddCore()` — DbContext, JWT bearer auth (reads the cookie via `OnMessageReceived`), CORS (`Frontend` policy), per-IP rate limiting on login, FluentValidation registrations, global `AuthorizeFilter` + `FluentValidationFilter` on all controllers.
@@ -96,4 +100,5 @@ Business errors are thrown as `AppException` (`App/Shared/Exceptions/AppExceptio
 
 ## Auth
 
-JWT stored in an HTTP-only cookie (`access_token`), read out in `AddJwtBearer().Events.OnMessageReceived` rather than the `Authorization` header — so there is no bearer-token handling on the client. Every controller requires auth by default (global `AuthorizeFilter`); use `[AllowAnonymous]` to opt out (e.g. login, user creation). `ICurrentUser`/`CurrentUserService` (`App/Core/Authentication/`) exposes the authenticated user's id/email/name/role for ownership checks inside services (see the `id != currentUser.Id && !currentUser.IsAdmin` pattern in `UsersService`). No refresh tokens — expired token means re-login.
+JWT stored in an HTTP-only cookie (`access_token`), read out in `AddJwtBearer().Events.OnMessageReceived` rather than the `Authorization` header — so there is no bearer-token handling on the client. Every controller requires auth by default (global `AuthorizeFilter`); use `[AllowAnonymous]` to opt out (e.g. login, user creation). `ICurrentUser`/`CurrentUserService` (`App/Core/Authentication/`) exposes the authenticated user's id/email/name/role for ownership checks inside services (see the `id != currentUser.Id && !currentUser.IsAdmin` pattern in `GetUserByIdService`/`UpdateUserService`/`DeleteUserService`). No refresh tokens — expired token means re-login.
+

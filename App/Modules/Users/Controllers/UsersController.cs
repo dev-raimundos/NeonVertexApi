@@ -7,34 +7,38 @@ namespace CoeurApi.App.Modules.Users.Controllers;
 
 [ApiController]
 [Route("api/users")]
-public class UsersController(UsersService service) : ControllerBase
+public class UsersController(
+    CreateUserService createUser,
+    GetUserByIdService getUserById,
+    UpdateUserService updateUser,
+    DeleteUserService deleteUser) : ControllerBase
 {
     [HttpPost]
     [AllowAnonymous]
     public async Task<ActionResult<UserResponse>> Create([FromBody] CreateUserDto dto, CancellationToken cancellationToken)
     {
-        var user = await service.CreateAsync(dto, cancellationToken);
+        var user = await createUser.ExecuteAsync(dto, cancellationToken);
         return Created($"api/users/{user.Id}", user);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<UserResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var user = await service.GetByIdAsync(id, cancellationToken);
+        var user = await getUserById.ExecuteAsync(id, cancellationToken);
         return Ok(user);
     }
 
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<UserResponse>> Update(Guid id, [FromBody] UpdateUserDto dto, CancellationToken cancellationToken)
     {
-        var user = await service.UpdateAsync(id, dto, cancellationToken);
+        var user = await updateUser.ExecuteAsync(id, dto, cancellationToken);
         return Ok(user);
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await service.DeleteAsync(id, cancellationToken);
+        await deleteUser.ExecuteAsync(id, cancellationToken);
         return NoContent();
     }
 }

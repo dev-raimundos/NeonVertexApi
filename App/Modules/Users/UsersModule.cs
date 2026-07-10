@@ -9,7 +9,10 @@ public static class UsersModule
     public static IServiceCollection AddUsersModule(this IServiceCollection services)
     {
         services.AddScoped<IUsersRepository, UsersRepository>();
-        services.AddScoped<UsersService>();
+        services.AddScoped<CreateUserService>();
+        services.AddScoped<GetUserByIdService>();
+        services.AddScoped<UpdateUserService>();
+        services.AddScoped<DeleteUserService>();
 
         return services;
     }

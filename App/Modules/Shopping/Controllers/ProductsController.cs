@@ -1,14 +1,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CoeurApi.App.Modules.Shopping.DTOs;
-using CoeurApi.App.Modules.Shopping.Services;
+using CoeurApi.App.Modules.Shopping.Services.Products;
 using CoeurApi.App.Shared.DTOs;
 
 namespace CoeurApi.App.Modules.Shopping.Controllers;
 
 [ApiController]
 [Route("api/products")]
-public class ProductsController(ProductsService service) : ControllerBase
+public class ProductsController(
+    GetAllProductsService getAllProducts,
+    GetProductByIdService getProductById,
+    CreateProductService createProduct,
+    UpdateProductService updateProduct,
+    DeleteProductService deleteProduct) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<PagedResult<ProductResponse>>> GetAll(
@@ -18,14 +23,14 @@ public class ProductsController(ProductsService service) : ControllerBase
         CancellationToken cancellationToken)
     {
         var (normalizedPage, normalizedPageSize) = Pagination.Normalize(page, pageSize);
-        var products = await service.GetAllAsync(category, normalizedPage, normalizedPageSize, cancellationToken);
+        var products = await getAllProducts.ExecuteAsync(category, normalizedPage, normalizedPageSize, cancellationToken);
         return Ok(products);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<ProductResponse>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var product = await service.GetByIdAsync(id, cancellationToken);
+        var product = await getProductById.ExecuteAsync(id, cancellationToken);
         return Ok(product);
     }
 
@@ -33,7 +38,7 @@ public class ProductsController(ProductsService service) : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<ProductResponse>> Create([FromBody] CreateProductDto dto, CancellationToken cancellationToken)
     {
-        var product = await service.CreateAsync(dto, cancellationToken);
+        var product = await createProduct.ExecuteAsync(dto, cancellationToken);
         return Created($"api/products/{product.Id}", product);
     }
 
@@ -41,7 +46,7 @@ public class ProductsController(ProductsService service) : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<ProductResponse>> Update(Guid id, [FromBody] UpdateProductDto dto, CancellationToken cancellationToken)
     {
-        var product = await service.UpdateAsync(id, dto, cancellationToken);
+        var product = await updateProduct.ExecuteAsync(id, dto, cancellationToken);
         return Ok(product);
     }
 
@@ -49,7 +54,7 @@ public class ProductsController(ProductsService service) : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await service.DeleteAsync(id, cancellationToken);
+        await deleteProduct.ExecuteAsync(id, cancellationToken);
         return NoContent();
     }
 }

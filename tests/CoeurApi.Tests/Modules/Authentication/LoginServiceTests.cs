@@ -10,7 +10,7 @@ using Moq;
 
 namespace CoeurApi.Tests.Modules.Authentication;
 
-public class AuthServiceTests
+public class LoginServiceTests
 {
     private readonly Mock<IUsersRepository> _repository = new();
     private readonly Mock<IUnitOfWork> _unitOfWork = new();
@@ -23,13 +23,13 @@ public class AuthServiceTests
         ExpirationHours = 1
     }));
 
-    private AuthService CreateService() => new(_repository.Object, _tokenService, _unitOfWork.Object);
+    private LoginService CreateService() => new(_repository.Object, _tokenService, _unitOfWork.Object);
 
     private static User CreateActiveUser(string password = "senha-correta")
         => User.Create("Fulano", "fulano@teste.com", BCrypt.Net.BCrypt.HashPassword(password));
 
     [Fact]
-    public async Task LoginAsync_ComEmailInexistente_DeveLancarUnauthorized()
+    public async Task ExecuteAsync_ComEmailInexistente_DeveLancarUnauthorized()
     {
         _repository.Setup(r => r.GetByEmailAsync("naoexiste@teste.com", It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
@@ -37,13 +37,13 @@ public class AuthServiceTests
         var service = CreateService();
         var dto = new LoginDto("naoexiste@teste.com", "qualquer-senha");
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.LoginAsync(dto));
+        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(dto));
 
         Assert.Equal(401, ex.StatusCode);
     }
 
     [Fact]
-    public async Task LoginAsync_ComSenhaErrada_DeveIncrementarTentativasELancarUnauthorized()
+    public async Task ExecuteAsync_ComSenhaErrada_DeveIncrementarTentativasELancarUnauthorized()
     {
         var user = CreateActiveUser();
         _repository.Setup(r => r.GetByEmailAsync(user.Email, It.IsAny<CancellationToken>()))
@@ -52,7 +52,7 @@ public class AuthServiceTests
         var service = CreateService();
         var dto = new LoginDto(user.Email, "senha-errada");
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.LoginAsync(dto));
+        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(dto));
 
         Assert.Equal(401, ex.StatusCode);
         Assert.Equal(1, user.FailedLoginAttempts);
@@ -60,7 +60,7 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task LoginAsync_ComContaBloqueada_DeveLancarTooManyRequests()
+    public async Task ExecuteAsync_ComContaBloqueada_DeveLancarTooManyRequests()
     {
         var user = CreateActiveUser();
         for (var i = 0; i < 5; i++)
@@ -72,13 +72,13 @@ public class AuthServiceTests
         var service = CreateService();
         var dto = new LoginDto(user.Email, "senha-correta");
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.LoginAsync(dto));
+        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(dto));
 
         Assert.Equal(429, ex.StatusCode);
     }
 
     [Fact]
-    public async Task LoginAsync_ComCredenciaisValidas_DeveRetornarTokenERegistrarLogin()
+    public async Task ExecuteAsync_ComCredenciaisValidas_DeveRetornarTokenERegistrarLogin()
     {
         var user = CreateActiveUser();
         _repository.Setup(r => r.GetByEmailAsync(user.Email, It.IsAny<CancellationToken>()))
@@ -87,7 +87,7 @@ public class AuthServiceTests
         var service = CreateService();
         var dto = new LoginDto(user.Email, "senha-correta");
 
-        var (response, token) = await service.LoginAsync(dto);
+        var (response, token) = await service.ExecuteAsync(dto);
 
         Assert.False(string.IsNullOrWhiteSpace(token));
         Assert.Equal(user.Email, response.User.Email);

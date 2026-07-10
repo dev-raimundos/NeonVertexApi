@@ -6,7 +6,7 @@ using CoeurApi.App.Shared.Interfaces;
 
 namespace CoeurApi.App.Modules.Authentication.Services;
 
-public class AuthService(IUsersRepository repository, TokenService tokenService, IUnitOfWork unitOfWork)
+public class LoginService(IUsersRepository repository, TokenService tokenService, IUnitOfWork unitOfWork)
 {
     private const string ErrInvalidCredentials = "Credenciais inválidas.";
     private const string ErrAccountLocked = "Conta bloqueada temporariamente. Tente novamente em alguns minutos.";
@@ -16,7 +16,7 @@ public class AuthService(IUsersRepository repository, TokenService tokenService,
     // existe, pra manter o tempo de resposta constante e evitar enumeração via timing.
     private const string DummyHash = "$2a$11$CwTycUXWue0Thq9StjUM0uJ8vY.SEmR5AZlSZDPGGStLL55E1Wei.";
 
-    public async Task<(AuthResponse Response, string Token)> LoginAsync(LoginDto dto, CancellationToken cancellationToken = default)
+    public async Task<(AuthResponse Response, string Token)> ExecuteAsync(LoginDto dto, CancellationToken cancellationToken = default)
     {
         var user = await repository.GetByEmailAsync(dto.Email, cancellationToken);
 

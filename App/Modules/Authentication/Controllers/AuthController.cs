@@ -10,14 +10,14 @@ namespace CoeurApi.App.Modules.Authentication.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(AuthService service, IOptions<JwtSettings> jwtSettings) : ControllerBase
+public class AuthController(LoginService loginService, IOptions<JwtSettings> jwtSettings) : ControllerBase
 {
     [HttpPost("login")]
     [AllowAnonymous]
     [EnableRateLimiting("login")]
     public async Task<ActionResult<AuthResponse>> Login([FromBody] LoginDto dto, CancellationToken cancellationToken)
     {
-        var result = await service.LoginAsync(dto, cancellationToken);
+        var result = await loginService.ExecuteAsync(dto, cancellationToken);
 
         var response = result.Response;
         var token = result.Token;

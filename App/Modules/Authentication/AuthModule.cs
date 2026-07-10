@@ -6,7 +6,7 @@ public static class AuthModule
 {
     public static IServiceCollection AddAuthModule(this IServiceCollection services)
     {
-        services.AddScoped<AuthService>();
+        services.AddScoped<LoginService>();
         return services;
     }
 }
