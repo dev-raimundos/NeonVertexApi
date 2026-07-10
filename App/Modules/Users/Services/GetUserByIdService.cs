@@ -11,10 +11,10 @@ public class GetUserByIdService(IUsersRepository repository, ICurrentUser curren
     public async Task<UserResponse> ExecuteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         if (id != currentUser.Id && !currentUser.IsAdmin)
-            throw AppException.Forbidden();
+            throw HttpException.Forbidden();
 
         var user = await repository.GetByIdAsync(id, cancellationToken)
-            ?? throw AppException.NotFound(ErrNotFound);
+            ?? throw HttpException.NotFound(ErrNotFound);
 
         return UserResponse.FromEntity(user);
     }

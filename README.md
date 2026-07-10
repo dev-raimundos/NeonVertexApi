@@ -47,7 +47,7 @@ coeur-api/
 │   │   └── Settings/                  # JwtSettings
 │   │
 │   ├── Shared/                        # Contratos e utilitários compartilhados entre módulos
-│   │   ├── Exceptions/                # AppException com factory methods por status HTTP
+│   │   ├── Exceptions/                # HttpException com factory methods por status HTTP
 │   │   ├── Interfaces/                # ICurrentUser, IUsersRepository
 │   │   ├── Models/                    # Result<T>, PagedList<T>
 │   │   └── Validators/                # Base de validação
@@ -107,24 +107,24 @@ ModuleName/
 ```
 HTTP Request
     └── Controller          # valida entrada, chama service
-        └── Service         # aplica regras de negócio, lança AppException se necessário
+        └── Service         # aplica regras de negócio, lança HttpException se necessário
             └── Repository  # consulta ou persiste no banco via EF Core
         └── Controller      # retorna response com status HTTP adequado
 HTTP Response
 
 Em caso de erro:
-    AppException → ExceptionMiddleware → JSON com { message, toast }
+    HttpException → ExceptionMiddleware → JSON com { message, toast }
 ```
 
 ### Tratamento de erros
 
-Erros de negócio são comunicados via `AppException`, uma exception com factory methods semânticos que interrompem o fluxo e são interceptados pelo `ExceptionMiddleware`:
+Erros de negócio são comunicados via `HttpException`, uma exception com factory methods semânticos que interrompem o fluxo e são interceptados pelo `ExceptionMiddleware`:
 
 ```csharp
 // No service — interrompe o fluxo imediatamente
-throw AppException.NotFound("Usuário não encontrado.");
-throw AppException.Conflict("Email já está em uso.");
-throw AppException.Forbidden("Acesso negado.");
+throw HttpException.NotFound("Usuário não encontrado.");
+throw HttpException.Conflict("Email já está em uso.");
+throw HttpException.Forbidden("Acesso negado.");
 ```
 
 O middleware formata automaticamente a resposta JSON com o contrato de `toast`, consumido pelo interceptor do frontend Angular:
@@ -330,7 +330,7 @@ task down      # derruba os containers
 - Entidades usam `private set` em todas as propriedades — estado só é alterado por métodos da própria entidade
 - Entidades são criadas via factory method estático `Create`, nunca por construtor público
 - DTOs de saída são `record` imutáveis com método estático `FromEntity` para conversão
-- Erros de negócio usam `AppException` com factory methods semânticos (`NotFound`, `Conflict`, etc.)
+- Erros de negócio usam `HttpException` com factory methods semânticos (`NotFound`, `Conflict`, etc.)
 - Todas as datas são armazenadas e retornadas em **UTC**
 - Nomes de tabelas e colunas seguem **snake_case** no banco via `UseSnakeCaseNamingConvention`
 - Cada módulo registra seus próprios serviços via extension method `AddNomeModule`

@@ -21,7 +21,7 @@
 - Namespaces seguem a estrutura de pastas: `CoeurApi.App.*`
 - Modelos usam propriedades com `private set` e factory method estático `Create`
 - DTOs são `record` imutáveis com método estático `FromEntity`
-- Erros de negócio usam `AppException` com factory methods estáticos
+- Erros de negócio usam `HttpException` com factory methods estáticos
 - Respostas de erro incluem objeto `toast` com `type` e `message`
 - Snake_case no banco via `UseSnakeCaseNamingConvention`
 - Datas sempre em UTC

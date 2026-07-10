@@ -13,10 +13,10 @@ public class GetOwnedShoppingListService(IShoppingListRepository repository)
     public async Task<ShoppingList> ExecuteAsync(Guid id, Guid ownerId, CancellationToken cancellationToken = default)
     {
         var list = await repository.GetByIdWithItemsAsync(id, cancellationToken)
-            ?? throw AppException.NotFound(ErrListNotFound);
+            ?? throw HttpException.NotFound(ErrListNotFound);
 
         if (list.OwnerId != ownerId)
-            throw AppException.Forbidden();
+            throw HttpException.Forbidden();
 
         return list;
     }

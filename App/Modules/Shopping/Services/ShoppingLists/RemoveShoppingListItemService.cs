@@ -13,7 +13,7 @@ public class RemoveShoppingListItemService(GetOwnedShoppingListService getOwnedL
         var list = await getOwnedList.ExecuteAsync(listId, ownerId, cancellationToken);
 
         var item = await repository.GetItemAsync(listId, itemId, cancellationToken)
-            ?? throw AppException.NotFound(ErrItemNotFound);
+            ?? throw HttpException.NotFound(ErrItemNotFound);
 
         repository.DeleteItem(item);
         list.Touch();

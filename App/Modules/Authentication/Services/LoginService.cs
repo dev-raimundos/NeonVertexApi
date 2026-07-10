@@ -23,19 +23,19 @@ public class LoginService(IUsersRepository repository, TokenService tokenService
         bool passwordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user?.PasswordHash ?? DummyHash);
 
         if (user is null)
-            throw AppException.Unauthorized(ErrInvalidCredentials);
+            throw HttpException.Unauthorized(ErrInvalidCredentials);
 
         if (!user.IsActive)
-            throw AppException.Forbidden(ErrAccountInactive);
+            throw HttpException.Forbidden(ErrAccountInactive);
 
         if (user.IsLocked)
-            throw AppException.TooManyRequests(ErrAccountLocked);
+            throw HttpException.TooManyRequests(ErrAccountLocked);
 
         if (!passwordValid)
         {
             user.RecordFailedLogin();
             await unitOfWork.SaveChangesAsync(cancellationToken);
-            throw AppException.Unauthorized(ErrInvalidCredentials);
+            throw HttpException.Unauthorized(ErrInvalidCredentials);
         }
 
         user.RecordLogin();

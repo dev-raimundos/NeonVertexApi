@@ -37,7 +37,7 @@ public class LoginServiceTests
         var service = CreateService();
         var dto = new LoginDto("naoexiste@teste.com", "qualquer-senha");
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(dto));
+        var ex = await Assert.ThrowsAsync<HttpException>(() => service.ExecuteAsync(dto));
 
         Assert.Equal(401, ex.StatusCode);
     }
@@ -52,7 +52,7 @@ public class LoginServiceTests
         var service = CreateService();
         var dto = new LoginDto(user.Email, "senha-errada");
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(dto));
+        var ex = await Assert.ThrowsAsync<HttpException>(() => service.ExecuteAsync(dto));
 
         Assert.Equal(401, ex.StatusCode);
         Assert.Equal(1, user.FailedLoginAttempts);
@@ -72,7 +72,7 @@ public class LoginServiceTests
         var service = CreateService();
         var dto = new LoginDto(user.Email, "senha-correta");
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(dto));
+        var ex = await Assert.ThrowsAsync<HttpException>(() => service.ExecuteAsync(dto));
 
         Assert.Equal(429, ex.StatusCode);
     }

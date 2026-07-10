@@ -23,7 +23,7 @@ public class CreateUserServiceTests
         var service = CreateService();
         var dto = new CreateUserDto("Fulano", "existente@teste.com", "senha12345");
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(dto));
+        var ex = await Assert.ThrowsAsync<HttpException>(() => service.ExecuteAsync(dto));
 
         Assert.Equal(409, ex.StatusCode);
     }

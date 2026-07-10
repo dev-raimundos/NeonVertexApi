@@ -12,7 +12,7 @@ public class UpdateProductService(IProductRepository repository, IUnitOfWork uni
     public async Task<ProductResponse> ExecuteAsync(Guid id, UpdateProductDto dto, CancellationToken cancellationToken = default)
     {
         var product = await repository.GetByIdAsync(id, cancellationToken)
-            ?? throw AppException.NotFound(ErrNotFound);
+            ?? throw HttpException.NotFound(ErrNotFound);
 
         product.Update(dto.Name, dto.Category, dto.ImageUrl);
         await unitOfWork.SaveChangesAsync(cancellationToken);

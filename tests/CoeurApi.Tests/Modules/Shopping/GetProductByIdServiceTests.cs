@@ -20,7 +20,7 @@ public class GetProductByIdServiceTests
 
         var service = CreateService();
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(Guid.NewGuid()));
+        var ex = await Assert.ThrowsAsync<HttpException>(() => service.ExecuteAsync(Guid.NewGuid()));
 
         Assert.Equal(404, ex.StatusCode);
     }

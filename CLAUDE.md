@@ -76,7 +76,7 @@ App/
         ├── Validators/       # FluentValidation validators for DTOs
         ├── Services/         # One class per use case (e.g. CreateUserService, GetUserByIdService) —
         │                     # no grouped multi-method services. Each exposes a single ExecuteAsync(...),
-        │                     # throws AppException, and orchestrates repo + other deps (including other
+        │                     # throws HttpException, and orchestrates repo + other deps (including other
         │                     # Services, e.g. GetOwnedShoppingListService injected wherever an ownership
         │                     # check needs to be reused). Registered individually in <Module>Module.cs.
         └── <Module>Module.cs # `Add<Module>Module()` extension registering the module's DI bindings
@@ -90,13 +90,13 @@ Module registration and cross-cutting setup live in `App/Core/Extensions/`:
 
 ## Error handling
 
-Business errors are thrown as `AppException` (`App/Shared/Exceptions/AppException.cs`) via semantic factory methods (`AppException.NotFound(...)`, `.Conflict(...)`, `.Forbidden(...)`, etc.), one per HTTP status code. `ExceptionMiddleware` catches these and any unhandled exception, formatting a consistent JSON body:
+Business errors are thrown as `HttpException` (`App/Shared/Exceptions/HttpException.cs`) via semantic factory methods (`HttpException.NotFound(...)`, `.Conflict(...)`, `.Forbidden(...)`, etc.) — only the status codes actually used exist as factories (`BadRequest`, `Unauthorized`, `Forbidden`, `NotFound`, `Conflict`, `TooManyRequests`, `NoContent`); add a new one only when a real use case needs it, don't pre-build the full HTTP status registry. `ExceptionMiddleware` catches these and any unhandled exception, formatting a consistent JSON body:
 
 ```json
 { "message": "...", "toast": { "type": "warning" | "error" | "info", "message": "..." } }
 ```
 
-`toast.type` is derived from the status code (5xx → `error`, 4xx → `warning`, else `info`) — consumed by the Angular frontend's HTTP interceptor. `AppException.BadRequest`/`.Conflict`/`.UnprocessableEntity` can also carry a per-field `errors` dictionary, which `FluentValidationFilter` populates automatically when a DTO fails validation (validators are resolved from DI by argument type, so every action-method parameter with a registered `IValidator<T>` is validated before the action runs).
+`toast.type` is derived from the status code (5xx → `error`, 4xx → `warning`, else `info`) — consumed by the Angular frontend's HTTP interceptor. `HttpException.BadRequest`/`.Conflict` can also carry a per-field `errors` dictionary, which `FluentValidationFilter` populates automatically when a DTO fails validation (validators are resolved from DI by argument type, so every action-method parameter with a registered `IValidator<T>` is validated before the action runs).
 
 ## Auth
 

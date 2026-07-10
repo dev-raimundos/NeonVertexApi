@@ -14,7 +14,7 @@ public class UpdateShoppingListItemService(GetOwnedShoppingListService getOwnedL
         var list = await getOwnedList.ExecuteAsync(listId, ownerId, cancellationToken);
 
         var item = await repository.GetItemAsync(listId, itemId, cancellationToken)
-            ?? throw AppException.NotFound(ErrItemNotFound);
+            ?? throw HttpException.NotFound(ErrItemNotFound);
 
         if (dto.IsChecked is true) item.Check();
         else if (dto.IsChecked is false) item.Uncheck();

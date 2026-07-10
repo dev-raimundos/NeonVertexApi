@@ -12,7 +12,7 @@ public class CreateUserService(IUsersRepository repository, IUnitOfWork unitOfWo
     public async Task<UserResponse> ExecuteAsync(CreateUserDto dto, CancellationToken cancellationToken = default)
     {
         if (await repository.ExistsByEmailAsync(dto.Email, cancellationToken))
-            throw AppException.Conflict(ErrEmailInUse);
+            throw HttpException.Conflict(ErrEmailInUse);
 
         var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
         var user = User.Create(dto.Name, dto.Email, passwordHash);

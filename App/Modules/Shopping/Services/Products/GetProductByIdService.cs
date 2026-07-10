@@ -11,7 +11,7 @@ public class GetProductByIdService(IProductRepository repository)
     public async Task<ProductResponse> ExecuteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var product = await repository.GetByIdAsync(id, cancellationToken)
-            ?? throw AppException.NotFound(ErrNotFound);
+            ?? throw HttpException.NotFound(ErrNotFound);
 
         return ProductResponse.FromEntity(product);
     }

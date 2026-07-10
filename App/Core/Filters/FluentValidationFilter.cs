@@ -27,7 +27,7 @@ public class FluentValidationFilter(IServiceProvider serviceProvider) : IAsyncAc
                         g => g.Select(e => e.ErrorMessage).ToArray()
                     ) as IReadOnlyDictionary<string, string[]>;
 
-                throw AppException.BadRequest("Dados inválidos.", errors);
+                throw HttpException.BadRequest("Dados inválidos.", errors);
             }
         }
 

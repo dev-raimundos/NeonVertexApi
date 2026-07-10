@@ -21,7 +21,7 @@ public class GetShoppingListByIdServiceTests
 
         var service = CreateService();
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(list.Id, Guid.NewGuid()));
+        var ex = await Assert.ThrowsAsync<HttpException>(() => service.ExecuteAsync(list.Id, Guid.NewGuid()));
 
         Assert.Equal(403, ex.StatusCode);
     }
@@ -34,7 +34,7 @@ public class GetShoppingListByIdServiceTests
 
         var service = CreateService();
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid()));
+        var ex = await Assert.ThrowsAsync<HttpException>(() => service.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid()));
 
         Assert.Equal(404, ex.StatusCode);
     }

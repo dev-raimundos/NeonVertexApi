@@ -30,7 +30,7 @@ public class UpdateShoppingListItemServiceTests
         var service = CreateService();
         var dto = new UpdateListItemDto(IsChecked: true);
 
-        var ex = await Assert.ThrowsAsync<AppException>(() => service.ExecuteAsync(list.Id, Guid.NewGuid(), dto, ownerId));
+        var ex = await Assert.ThrowsAsync<HttpException>(() => service.ExecuteAsync(list.Id, Guid.NewGuid(), dto, ownerId));
 
         Assert.Equal(404, ex.StatusCode);
     }

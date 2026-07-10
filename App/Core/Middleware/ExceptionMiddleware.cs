@@ -11,7 +11,7 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         {
             await next(context);
         }
-        catch (AppException ex)
+        catch (HttpException ex)
         {
             await WriteResponseAsync(context, ex.StatusCode, ex.Message, ex.ToastType, ex.Errors);
         }
