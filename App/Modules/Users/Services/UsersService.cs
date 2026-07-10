@@ -55,7 +55,7 @@ public class UsersService(IUsersRepository repository, AppDbContext context, ICu
 
         var user = await repository.GetByIdAsync(id) ?? throw AppException.NotFound(ErrNotFound);
 
-        await repository.DeleteAsync(user);
+        repository.Delete(user);
         await context.SaveChangesAsync();
     }
 }

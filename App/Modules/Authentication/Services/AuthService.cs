@@ -11,11 +11,15 @@ public class AuthService(IUsersRepository repository, TokenService tokenService,
 {
     private const string ErrInvalidCredentials = "Credenciais inválidas.";
     private const string ErrAccountLocked = "Conta bloqueada temporariamente. Tente novamente em alguns minutos.";
+    private const string ErrAccountInactive = "Conta desativada.";
 
     public async Task<(AuthResponse Response, string Token)> LoginAsync(LoginDto dto)
     {
         var user = await repository.GetByEmailAsync(dto.Email)
             ?? throw AppException.Unauthorized(ErrInvalidCredentials);
+
+        if (!user.IsActive)
+            throw AppException.Forbidden(ErrAccountInactive);
 
         if (user.IsLocked)
             throw AppException.TooManyRequests(ErrAccountLocked);

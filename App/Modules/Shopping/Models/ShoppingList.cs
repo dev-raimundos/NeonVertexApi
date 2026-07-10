@@ -26,4 +26,9 @@ public class ShoppingList
         Name = name;
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public void Touch()
+    {
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

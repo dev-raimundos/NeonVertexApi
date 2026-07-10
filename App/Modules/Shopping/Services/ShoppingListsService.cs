@@ -19,12 +19,7 @@ public class ShoppingListsService(IShoppingListRepository repository, AppDbConte
 
     public async Task<ShoppingListResponse> GetByIdAsync(Guid id, Guid ownerId)
     {
-        var list = await repository.GetByIdWithItemsAsync(id)
-            ?? throw AppException.NotFound(ErrListNotFound);
-
-        if (list.OwnerId != ownerId)
-            throw AppException.Forbidden();
-
+        var list = await GetOwnedListAsync(id, ownerId);
         return ShoppingListResponse.FromEntity(list);
     }
 
@@ -39,11 +34,7 @@ public class ShoppingListsService(IShoppingListRepository repository, AppDbConte
 
     public async Task<ShoppingListResponse> UpdateAsync(Guid id, UpdateShoppingListDto dto, Guid ownerId)
     {
-        var list = await repository.GetByIdWithItemsAsync(id)
-            ?? throw AppException.NotFound(ErrListNotFound);
-
-        if (list.OwnerId != ownerId)
-            throw AppException.Forbidden();
+        var list = await GetOwnedListAsync(id, ownerId);
 
         list.Rename(dto.Name);
         await context.SaveChangesAsync();
@@ -53,11 +44,7 @@ public class ShoppingListsService(IShoppingListRepository repository, AppDbConte
 
     public async Task DeleteAsync(Guid id, Guid ownerId)
     {
-        var list = await repository.GetByIdWithItemsAsync(id)
-            ?? throw AppException.NotFound(ErrListNotFound);
-
-        if (list.OwnerId != ownerId)
-            throw AppException.Forbidden();
+        var list = await GetOwnedListAsync(id, ownerId);
 
         repository.Delete(list);
         await context.SaveChangesAsync();
@@ -65,14 +52,11 @@ public class ShoppingListsService(IShoppingListRepository repository, AppDbConte
 
     public async Task<ListItemResponse> AddItemAsync(Guid listId, AddListItemDto dto, Guid ownerId)
     {
-        var list = await repository.GetByIdWithItemsAsync(listId)
-            ?? throw AppException.NotFound(ErrListNotFound);
-
-        if (list.OwnerId != ownerId)
-            throw AppException.Forbidden();
+        var list = await GetOwnedListAsync(listId, ownerId);
 
         var item = ListItem.Create(listId, dto.Name, dto.Quantity, dto.Unit, dto.ProductId);
         await repository.AddItemAsync(item);
+        list.Touch();
         await context.SaveChangesAsync();
 
         return ListItemResponse.FromEntity(item);
@@ -80,11 +64,7 @@ public class ShoppingListsService(IShoppingListRepository repository, AppDbConte
 
     public async Task<ListItemResponse> UpdateItemAsync(Guid listId, Guid itemId, UpdateListItemDto dto, Guid ownerId)
     {
-        var list = await repository.GetByIdWithItemsAsync(listId)
-            ?? throw AppException.NotFound(ErrListNotFound);
-
-        if (list.OwnerId != ownerId)
-            throw AppException.Forbidden();
+        var list = await GetOwnedListAsync(listId, ownerId);
 
         var item = await repository.GetItemAsync(listId, itemId)
             ?? throw AppException.NotFound(ErrItemNotFound);
@@ -95,6 +75,7 @@ public class ShoppingListsService(IShoppingListRepository repository, AppDbConte
         if (dto.Name is not null || dto.Quantity is not null || dto.Unit is not null)
             item.UpdateDetails(dto.Name ?? item.Name, dto.Quantity ?? item.Quantity, dto.Unit ?? item.Unit);
 
+        list.Touch();
         await context.SaveChangesAsync();
 
         return ListItemResponse.FromEntity(item);
@@ -102,16 +83,24 @@ public class ShoppingListsService(IShoppingListRepository repository, AppDbConte
 
     public async Task RemoveItemAsync(Guid listId, Guid itemId, Guid ownerId)
     {
-        var list = await repository.GetByIdWithItemsAsync(listId)
-            ?? throw AppException.NotFound(ErrListNotFound);
-
-        if (list.OwnerId != ownerId)
-            throw AppException.Forbidden();
+        var list = await GetOwnedListAsync(listId, ownerId);
 
         var item = await repository.GetItemAsync(listId, itemId)
             ?? throw AppException.NotFound(ErrItemNotFound);
 
         repository.DeleteItem(item);
+        list.Touch();
         await context.SaveChangesAsync();
+    }
+
+    private async Task<ShoppingList> GetOwnedListAsync(Guid id, Guid ownerId)
+    {
+        var list = await repository.GetByIdWithItemsAsync(id)
+            ?? throw AppException.NotFound(ErrListNotFound);
+
+        if (list.OwnerId != ownerId)
+            throw AppException.Forbidden();
+
+        return list;
     }
 }

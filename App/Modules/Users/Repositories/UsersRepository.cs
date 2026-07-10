@@ -19,9 +19,6 @@ public class UsersRepository(AppDbContext context) : IUsersRepository
     public async Task AddAsync(User user)
         => await context.Users.AddAsync(user);
 
-    public async Task UpdateAsync(User user)
-        => context.Users.Update(user);
-
-    public async Task DeleteAsync(User user)
+    public void Delete(User user)
         => context.Users.Remove(user);
 }

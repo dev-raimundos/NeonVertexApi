@@ -28,12 +28,6 @@ public class ShoppingListRepository(AppDbContext context) : IShoppingListReposit
     public async Task AddItemAsync(ListItem item)
         => await context.ListItems.AddAsync(item);
 
-    public void Update(ShoppingList list)
-        => context.ShoppingLists.Update(list);
-
-    public void UpdateItem(ListItem item)
-        => context.ListItems.Update(item);
-
     public void Delete(ShoppingList list)
         => context.ShoppingLists.Remove(list);
 

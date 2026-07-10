@@ -22,9 +22,6 @@ public class ProductRepository(AppDbContext context) : IProductRepository
     public async Task AddAsync(Product product)
         => await context.Products.AddAsync(product);
 
-    public void Update(Product product)
-        => context.Products.Update(product);
-
     public void Delete(Product product)
         => context.Products.Remove(product);
 }

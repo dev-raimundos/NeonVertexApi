@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
+using NeonVertexApi.App.Core.Settings;
 using NeonVertexApi.App.Modules.Authentication.DTOs;
 using NeonVertexApi.App.Modules.Authentication.Services;
 
@@ -8,7 +10,7 @@ namespace NeonVertexApi.App.Modules.Authentication.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(AuthService service) : ControllerBase
+public class AuthController(AuthService service, IOptions<JwtSettings> jwtSettings) : ControllerBase
 {
     [HttpPost("login")]
     [AllowAnonymous]
@@ -25,7 +27,7 @@ public class AuthController(AuthService service) : ControllerBase
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.Strict,
-            Expires = DateTimeOffset.UtcNow.AddHours(24)
+            Expires = DateTimeOffset.UtcNow.AddHours(jwtSettings.Value.ExpirationHours)
         });
 
         return Ok(response);

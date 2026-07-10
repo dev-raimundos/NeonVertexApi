@@ -9,8 +9,6 @@ public interface IShoppingListRepository
     Task<ListItem?> GetItemAsync(Guid listId, Guid itemId);
     Task AddAsync(ShoppingList list);
     Task AddItemAsync(ListItem item);
-    void Update(ShoppingList list);
-    void UpdateItem(ListItem item);
     void Delete(ShoppingList list);
     void DeleteItem(ListItem item);
 }

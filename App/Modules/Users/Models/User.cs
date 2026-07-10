@@ -41,18 +41,6 @@ public class User
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void VerifyEmail()
-    {
-        IsEmailVerified = true;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void Deactivate()
-    {
-        IsActive = false;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
     public void RecordLogin()
     {
         LastLoginAt = DateTime.UtcNow;
@@ -65,11 +53,5 @@ public class User
         FailedLoginAttempts++;
         if (FailedLoginAttempts >= 5)
             LockedUntil = DateTime.UtcNow.AddMinutes(15);
-    }
-
-    public void ChangeRole(UserRole role)
-    {
-        Role = role;
-        UpdatedAt = DateTime.UtcNow;
     }
 }

@@ -9,6 +9,7 @@ public static class WebApplicationExtensions
         app.UseMiddleware<ExceptionMiddleware>();
         app.UseCors("Frontend");
         app.UseAuthentication();
+        app.UseAuthorization();
         app.UseRateLimiter();
 
         return app;
