@@ -11,5 +11,11 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include=".env">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include=".env.example">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
   </ItemGroup>
 </Project>
