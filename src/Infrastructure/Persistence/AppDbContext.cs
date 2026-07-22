@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using CoeurApi.Modules.Shopping.Domain;
+using CoeurApi.Modules.Shopping.Infrastructure.Persistence;
 using CoeurApi.Modules.Users.Domain;
+using CoeurApi.Modules.Users.Infrastructure.Persistence;
 using CoeurApi.SharedKernel.Abstractions;
 
 namespace CoeurApi.Infrastructure.Persistence;
@@ -14,8 +16,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(User).Assembly);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(Product).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfiguration).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductConfiguration).Assembly);
         base.OnModelCreating(modelBuilder);
     }
 }
